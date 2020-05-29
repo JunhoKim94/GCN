@@ -25,11 +25,16 @@ class GraphConv(nn.Module):
 
     def forward(self, x, adj):
         '''
-        x : node feature (n , f)
-        adj : adjacency matrix (n, n)
+        x : node feature (n , f) --> dense matrix
+        adj : adjacency matrix (n, n) --> sparse matrix
+
+        return activation(adj * x * W)
         '''
 
         x =  F.dropout(x, p = self.dropout)
-
-        output = torch.mm()
+        
+        out = torch.mm(x, self.weight)
+        
+        if self.bias is not None:
+            out = torch.add(out, self.bias)
         
