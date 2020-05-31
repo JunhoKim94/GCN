@@ -5,7 +5,7 @@ import math
 
 class GraphConv(nn.Module):
 
-    def __init__(self, inputs, outputs, dropout, bias, activation = nn.ReLU):
+    def __init__(self, inputs, outputs, dropout, bias = True, activation = F.relu):
         super(GraphConv, self).__init__()
 
         self.dropout = dropout
@@ -16,6 +16,8 @@ class GraphConv(nn.Module):
         self.weight = nn.Parameter(torch.FloatTensor(inputs, outputs))
         if bias:
             self.bias = nn.Parameter(torch.FloatTensor(outputs))
+        
+        self.initialize()
         
     def initialize(self):
         stdv = 1. / math.sqrt(self.weight.size(1))
@@ -32,11 +34,12 @@ class GraphConv(nn.Module):
         '''
 
         x =  F.dropout(x, p = self.dropout)
-        
         out = torch.mm(x, self.weight)
         
         if self.bias is not None:
             out = torch.add(out, self.bias)
 
-        
+        out = torch.spmm(adj, out)
+
+        return self.act(out), adj
         

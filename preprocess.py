@@ -59,7 +59,6 @@ def load_data(path, dataset):
 
     #build symmetric adj
     adj += adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
-    print(adj)
     #print(idx.get)
 
     features = normalize(features)
