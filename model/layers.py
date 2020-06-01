@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from dgl.nn.pytorch import GATConv
 
 
 class GraphConv(nn.Module):
@@ -16,6 +15,7 @@ class GraphConv(nn.Module):
         self.act = activation
 
         self.weight = nn.Parameter(torch.FloatTensor(inputs, outputs))
+
         if bias:
             self.bias = nn.Parameter(torch.FloatTensor(outputs))
         
@@ -45,8 +45,9 @@ class GraphConv(nn.Module):
 
         return self.act(out), adj
         
+
 class GAT_layer(nn.Module):
-    def __init__(self, inputs, outputs, dropout, bias , activation):
+    def __init__(self, inputs, outputs, dropout, bias = True , activation = F.leaky_relu):
         super(GAT_layer, self).__init__()
 
         self.dropout = dropout
@@ -79,9 +80,10 @@ class GAT_layer(nn.Module):
         out = torch.mm(x, self.weight)
         #(n * n,h_i) + (n , h_0 ~ h_n)
         output = torch.cat([out.repeat(1, n).view(n * n, -1), out.repeat(n,1)]).view(n, -1 , 2 * self.outputs)
-        att = self.act(torch.nn(output, self.att).squeeze(2))
+        #print(output.shape, out.shape, self.att.shape)
+        att = self.act(torch.matmul(output, self.att).squeeze(2))
 
-        zeros = -9e15 * torch.ones_like(adj)
+        zeros = -1e15 * torch.ones_like(adj)
         att = torch.where(adj > 0, att, zeros)
 
         att = F.softmax(att)
@@ -98,8 +100,8 @@ class MultiHeadGAT(nn.Module):
 
         self.merge = merge
 
-    def forward(self, h):
-        out = [att_head(h) for att_head in self.multi]
+    def forward(self, h, adj):
+        out = [att_head(h, adj) for att_head in self.multi]
 
         if self.merge.lower() == 'cat':
             return torch.cat(out, dim = 1)

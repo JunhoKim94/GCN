@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from preprocess import load_data
-from model.model import GCN
+from model.model import GCN, GAT
 
 #initialize 안하면 수렴 안댐.
 device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
@@ -28,7 +28,8 @@ lr = 0.001
 epochs = 1000
 w_decay = 5e-4
 
-model = GCN(feat, hidden, output, dropout)
+#model = GCN(feat, hidden, output, dropout)
+model = GAT(feat, hidden, output, 8, dropout)
 criterion = nn.NLLLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr = lr, weight_decay = w_decay)
 
