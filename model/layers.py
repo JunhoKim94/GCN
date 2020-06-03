@@ -82,6 +82,9 @@ class GAT_layer(nn.Module):
         output = torch.cat([out.repeat(1, n).view(n * n, -1), out.repeat(n,1)]).view(n, -1 , 2 * self.outputs)
         #print(output.shape, out.shape, self.att.shape)
         att = self.act(torch.matmul(output, self.att).squeeze(2))
+        #print(att.shape)
+
+        #adj = adj.to_dense()
 
         zeros = -1e15 * torch.ones_like(adj)
         att = torch.where(adj > 0, att, zeros)

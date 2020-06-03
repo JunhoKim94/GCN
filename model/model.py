@@ -24,7 +24,7 @@ class GAT(nn.Module):
         super(GAT, self).__init__()
 
         self.gt1 = MultiHeadGAT(feature, hidden, num_head, dropout, bias = True,activation = F.leaky_relu)
-        self.gt2 = MultiHeadGAT(hidden, output, num_head, dropout, bias = True, activation= F.leaky_relu)
+        self.gt2 = MultiHeadGAT(hidden * num_head, output, num_head, dropout, bias = True, activation= F.leaky_relu)
 
         
     def forward(self, x, adj):

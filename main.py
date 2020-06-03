@@ -11,6 +11,7 @@ print(f"GPU Usable : {torch.cuda.is_available()}")
 
 adj, features, labels, idx_train, idx_val, idx_test = load_data("./data/cora", "cora")
 
+#adj = adj.to_dense()
 adj.to(device)
 features.to(device)
 labels.to(device)
@@ -28,8 +29,8 @@ lr = 0.001
 epochs = 1000
 w_decay = 5e-4
 
-#model = GCN(feat, hidden, output, dropout)
-model = GAT(feat, hidden, output, 8, dropout)
+model = GCN(feat, hidden, output, dropout)
+#model = GAT(feat, hidden, output, 8, dropout)
 criterion = nn.NLLLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr = lr, weight_decay = w_decay)
 
